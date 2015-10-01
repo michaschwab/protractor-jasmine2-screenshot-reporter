@@ -246,9 +246,12 @@ function Jasmine2ScreenShotReporter(opts) {
           var afterSpec = function(done) {
               browser.getCapabilities().then(function (capabilities) {
                   clonedSpec._capabilities = capabilities;
-                  browser.takeScreenshot().then(function (png) {
-                      clonedSpec._png = png;
-                      done();
+                  browser.driver.manage().window().getSize().then(function(windowSize) {
+                      clonedSpec._windowSize = windowSize;
+                      browser.takeScreenshot().then(function (png) {
+                          clonedSpec._png = png;
+                          done();
+                      });
                   });
               });
           }
@@ -278,7 +281,7 @@ function Jasmine2ScreenShotReporter(opts) {
           return;
         }
 
-        file = opts.pathBuilder(spec, suites, spec._capabilities);
+        file = opts.pathBuilder(spec, suites, spec._capabilities, spec._windowSize);
         spec.filename = file + '.png';
 
         var screenshotPath,
